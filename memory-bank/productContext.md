@@ -18,3 +18,8 @@ GuestPass allows hosts to generate a physical, scannable card for their network.
 | High | Host | Input my Network details (SSID/Pass) | I can create a connection string for my router. |
 | High | Host | Click "Print" | I can get a clean, card-sized layout without the input forms. |
 | High | Admin | Deploy this on a VPS without Docker | I can manage it easily alongside my other CloudPanel apps. |
+
+## 4. Future Roadmap
+* **Customizable Establishment Name:** Allow users to replace the "WI-FI GUEST PASS" header with a custom name (e.g., "Emma's Airbnb", "Cafe Wifi").
+    * **Behavior:** Optional input field.
+    * **Default:** If left empty, defaults to "WI-FI GUEST PASS".

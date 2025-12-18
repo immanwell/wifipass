@@ -1,8 +1,12 @@
 # 📌 Active Session Context
 
-# 📌- **Active Tasks**:
-    - [ ] SEO Implementation (Meta tags, Open Graph, Sitemap)
-    - [ ] Deferred: Fix iOS Safari print blank page issue (requires deeper investigation into mobile print drivers)
+## Active Tasks
+* [ ] Fix iOS Safari print issue (Deferred)
+* [ ] Document Future Feature: Custom Establishment Name (Done)
+
+## Recent Context
+* **Refinement:** Printed card logic updated to prevent race conditions with logo loading.
+* **Roadmap Update:** User requested a future feature to allow customizable headers on the printed card.
 
 ## 1. Current Session Goal
 Project Completed.

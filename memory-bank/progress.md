@@ -19,3 +19,6 @@
 * [x] Implement specific CSS `@media print` styles for the "Card" view.
 * [x] Perform Browser/E2E Verification of the full flow.
 * [x] Rebrand to "WifiPass" and implement "Midnight & Neon" aesthetic.
+
+## FUTURE / ROADMAP
+* [ ] **Custom Host/Establishment Name:** Allow replacing "WI-FI GUEST PASS" with custom text (e.g., "Emma's Airbnb"). Defaults to original text if empty.
