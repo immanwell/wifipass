@@ -141,7 +141,8 @@
             }
 
             #print-area {
-                position: fixed;
+                position: absolute;
+                /* Fixed positioning breaks on some mobile print drivers */
                 top: 0;
                 left: 0;
                 width: 100%;
@@ -196,6 +197,18 @@
                 background: white !important;
                 box-shadow: none !important;
                 border: 1px solid #ddd;
+                width: 14rem !important;
+                /* Force dimensions for mobile */
+                height: 14rem !important;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .qr-frame img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: contain !important;
             }
         }
     </style>
