@@ -137,11 +137,13 @@
             }
 
             #print-area {
-                position: absolute;
-                /* Fixed positioning breaks on some mobile print drivers */
+                position: relative;
+                /* Must be relative/static so body has height! */
                 top: 0;
                 left: 0;
                 width: 100%;
+                min-height: 100vh;
+                /* Ensure it takes up space */
                 height: 100%;
                 display: flex !important;
                 justify-content: center;
@@ -504,6 +506,13 @@
             printArea.appendChild(clone);
 
             // Temporarily remove hidden class to ensure visibility logic works
+            printArea.classList.remove('hidden');
+
+            // Force hide scrollbar immediately to prevent flash
+            document.body.style.overflow = 'hidden';
+
+            // iOS FIX: Force layout recalc
+            void document.body.offsetHeight;
             printArea.classList.remove('hidden');
 
             // Force hide scrollbar immediately to prevent flash
