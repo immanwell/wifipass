@@ -2,8 +2,7 @@
 
 A secure, modern, and beautiful way to share Wi-Fi access via QR codes. Built for simplicity and visual appeal.
 
-![WifiPass Screenshot](https://raw.githubusercontent.com/immanwell/wifipass/main/public/favicon.svg)
-*(Note: You can replace this with a real screenshot later)*
+![WifiPass Screenshot](https://raw.githubusercontent.com/immanwell/wifipass/main/public/app-screenshot.png)
 
 ## Features
 
