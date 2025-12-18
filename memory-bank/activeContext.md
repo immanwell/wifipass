@@ -5,6 +5,7 @@
 * [ ] Document Future Feature: Custom Establishment Name (Done)
 
 ## Recent Context
+* **AdBlock Note:** User confirmed social share buttons may be hidden by AdGuard on macOS Safari; acceptable behavior (no fix needed).
 * **Refinement:** Printed card logic updated to prevent race conditions with logo loading.
 * **Roadmap Update:** User requested a future feature to allow customizable headers on the printed card.
 
