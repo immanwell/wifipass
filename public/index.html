@@ -637,21 +637,33 @@
             // Force hide scrollbar immediately to prevent flash
             document.body.style.overflow = 'hidden';
 
-            window.print();
+            // iOS FIX: Force layout recalc
+            void document.body.offsetHeight;
+            printArea.classList.remove('hidden');
 
-            // Cleanup after print dialog closes
-            // Note: window.print() is blocking in many browsers, but not all. Be safe.
-            const cleanup = () => {
-                printArea.classList.add('hidden');
-                printArea.innerHTML = '';
-                document.body.style.overflow = ''; // Restore scrollbar
+            const logo = printArea.querySelector('.qr-brand-overlay');
+            const doPrint = () => {
+                window.print();
+
+                // Cleanup after print dialog closes
+                const cleanup = () => {
+                    printArea.classList.add('hidden');
+                    printArea.innerHTML = '';
+                    document.body.style.overflow = ''; // Restore scrollbar
+                };
+
+                // Cleanup logic
+                cleanup();
+                window.onafterprint = cleanup;
             };
 
-            // Attempt immediate cleanup (blocking)
-            cleanup();
-
-            // Fallback for non-blocking environments
-            window.onafterprint = cleanup;
+            // If logo exists and isn't loaded, wait for it
+            if (logo && !logo.complete) {
+                logo.onload = doPrint;
+                logo.onerror = doPrint; // Print anyway if it fails
+            } else {
+                doPrint();
+            }
         });
 
         resetBtn.addEventListener('click', () => {
