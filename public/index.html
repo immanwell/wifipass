@@ -132,6 +132,8 @@
                 margin: 0;
                 padding: 0;
                 background: white;
+                overflow: hidden !important;
+                /* Forces scrollbar to disappear */
             }
 
             #app-ui {
@@ -495,6 +497,9 @@
             // Temporarily remove hidden class to ensure visibility logic works
             printArea.classList.remove('hidden');
 
+            // Force hide scrollbar immediately to prevent flash
+            document.body.style.overflow = 'hidden';
+
             window.print();
 
             // Cleanup after print dialog closes
@@ -502,6 +507,7 @@
             const cleanup = () => {
                 printArea.classList.add('hidden');
                 printArea.innerHTML = '';
+                document.body.style.overflow = ''; // Restore scrollbar
             };
 
             // Attempt immediate cleanup (blocking)
