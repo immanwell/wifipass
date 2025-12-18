@@ -31,16 +31,28 @@ git clone https://github.com/immanwell/wifipass.git .
 npm install
 ```
 
-## 4. Start the App
-CloudPanel manages Node.js processes automatically based on the **Settings** tab.
+## 4. Start the App (via PM2)
+Since CloudPanel doesn't auto-start Node apps, we use **PM2** (Process Manager).
+*If you already installed PM2 globally for another site, you don't need to install it again.*
 
-1.  Go to your CloudPanel Dashboard -> **Sites** -> **wifipass.pp.ua**.
-2.  Click the **Settings** tab.
-3.  Ensure the following:
-    *   **App Port**: `3000`
-    *   **Run Command**: `npm start`
-4.  Click **Save**.
-5.  If the status isn't "Running", click **Restart** or **Update**.
+Run these commands in the site directory (`htdocs/wifipass.pp.ua`):
+
+```bash
+# 1. Start the app named "wifipass"
+pm2 start npm --name "wifipass" -- start
+
+# 2. Save the list so it restarts on reboot
+pm2 save
+```
+
+*Note: The command `npm start` inside `package.json` runs `tsx app.ts`, so PM2 will handle the TypeScript execution automatically.*
+
+## 5. Reverse Proxy Setup (CloudPanel)
+Now tell CloudPanel to point to your running app:
+1.  Go to CloudPanel Dashboard -> **Sites** -> **wifipass.pp.ua** -> **Settings**.
+2.  **App Port**: `3000`
+3.  Click **Save**.
+
 
 ## 5. Future Updates
 To update your site later, just run:
