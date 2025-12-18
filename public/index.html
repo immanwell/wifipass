@@ -497,8 +497,18 @@
 
             window.print();
 
-            // Re-hide after print (optional, but keeps DOM clean)
-            // setTimeout(() => printArea.classList.add('hidden'), 500);
+            // Cleanup after print dialog closes
+            // Note: window.print() is blocking in many browsers, but not all. Be safe.
+            const cleanup = () => {
+                printArea.classList.add('hidden');
+                printArea.innerHTML = '';
+            };
+
+            // Attempt immediate cleanup (blocking)
+            cleanup();
+
+            // Fallback for non-blocking environments
+            window.onafterprint = cleanup;
         });
 
         resetBtn.addEventListener('click', () => {
