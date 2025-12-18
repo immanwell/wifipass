@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WifiPass - Secure Wi-Fi Access</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Plausible Analytics -->
+    <script defer data-domain="wifipass.pp.ua" src="https://analytics.sitemgt.io/js/script.outbound-links.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        glass: 'rgba(255, 255, 255, 0.1)',
+                        glassBorder: 'rgba(255, 255, 255, 0.2)',
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(167, 139, 250, 0.5)',
+                        'card': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            /* Modern Purple/Pink Gradient */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff758c 100%);
+            min-height: 100vh;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .input-group input,
+        .input-group select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.5);
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        /* The WifiPass Card - Vertical "Badge" Style */
+        .wifi-pass-card {
+            width: 380px;
+            aspect-ratio: 3/4.5;
+            background: rgba(255, 255, 255, 0.85);
+            /* Light, frosted look for the card itself */
+            backdrop-filter: blur(40px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: #1e293b;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2.5rem 2rem;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .wifi-pass-card.visible {
+            display: flex;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .qr-frame {
+            background: white;
+            padding: 12px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #ff758c);
+        }
+
+        /* Print Styles */
+        @media print {
+
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            #app-ui {
+                display: none !important;
+            }
+
+            #print-area {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                background: white;
+                z-index: 9999;
+                visibility: visible !important;
+            }
+
+            /* Ensure all children of print-area are visible */
+            #print-area * {
+                visibility: visible !important;
+            }
+
+            .wifi-pass-card {
+                display: flex !important;
+                flex-direction: column;
+                box-shadow: none !important;
+                border: 2px solid #000;
+                /* High contrast border */
+                backdrop-filter: none !important;
+                background: white !important;
+                color: black !important;
+                transform: none !important;
+                margin: 0;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            /* Improve contrast for print */
+            .wifi-pass-card .text-slate-400 {
+                color: #555 !important;
+            }
+
+            .wifi-pass-card .text-slate-300 {
+                color: #888 !important;
+            }
+
+            .wifi-pass-card h1,
+            .wifi-pass-card h2,
+            .wifi-pass-card h3,
+            .wifi-pass-card span,
+            .wifi-pass-card p {
+                color: black !important;
+            }
+
+            /* Ensure QR code container has no shadow/bg issues */
+            .qr-frame {
+                background: white !important;
+                box-shadow: none !important;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body class="selection:bg-pink-500 selection:text-white">
+
+    <!-- Main App Container -->
+    <div id="app-ui" class="min-h-screen flex flex-col md:flex-row items-center justify-center p-6 gap-12">
+
+        <!-- Left Side: Header & Form -->
+        <div class="flex flex-col max-w-md w-full z-10">
+            <header class="mb-8 pl-2">
+                <h1
+                    class="text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-pink-200 mb-2 drop-shadow-sm">
+                    WifiPass
+                </h1>
+                <p class="text-lg text-pink-100/80 font-medium ml-1">
+                    Generate beautiful, secure access cards.
+                </p>
+            </header>
+
+            <div class="glass-panel p-8 rounded-3xl">
+                <form id="wifi-form" class="space-y-5">
+
+                    <div class="input-group space-y-2">
+                        <label class="text-sm font-semibold text-pink-100 uppercase tracking-wider ml-1">Network
+                            Name</label>
+                        <input type="text" id="ssid" name="ssid" required placeholder="Guest WiFi"
+                            class="w-full px-5 py-4 rounded-xl text-white placeholder-white/30 font-medium text-lg">
+                    </div>
+
+                    <div class="input-group space-y-2">
+                        <label
+                            class="text-sm font-semibold text-pink-100 uppercase tracking-wider ml-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" required placeholder="SafePassword123"
+                                class="w-full px-5 py-4 rounded-xl text-white placeholder-white/30 font-mono text-lg">
+                            <button type="button" id="toggle-pass"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 12.022 12.022 0 0 1-19.876 0" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="input-group space-y-2 flex-1">
+                            <label
+                                class="text-sm font-semibold text-pink-100 uppercase tracking-wider ml-1">Encryption</label>
+                            <select id="encryption" name="encryption"
+                                class="w-full px-5 py-4 rounded-xl text-white appearance-none cursor-pointer font-medium">
+                                <option value="WPA" class="text-slate-800">WPA / WPA2</option>
+                                <option value="WEP" class="text-slate-800">WEP</option>
+                                <option value="nopass" class="text-slate-800">None</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end mb-4">
+                            <label
+                                class="flex items-center space-x-3 cursor-pointer p-2 rounded-lg hover:bg-white/5 transition">
+                                <input type="checkbox" name="hidden"
+                                    class="w-5 h-5 rounded border-white/30 bg-transparent text-pink-500 focus:ring-pink-500">
+                                <span class="text-sm font-medium text-white">Hidden</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex gap-4">
+                        <button type="button" id="generate-btn"
+                            class="flex-1 bg-white text-purple-700 hover:bg-pink-50 font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform transition hover:-translate-y-1 active:scale-95 text-lg">
+                            Generate Card
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side: The Result Card (Preview) -->
+        <div id="preview-area" class="z-10 relative perspective-1000">
+            <!-- Placeholder or empty state could go here, but we'll just show the card when generated -->
+
+            <div id="print-target" class="wifi-pass-card">
+                <div class="card-decoration"></div>
+
+                <div class="text-center w-full mt-4">
+                    <h2 class="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mb-1">Wi-Fi Guest Pass</h2>
+                    <h3 class="text-slate-800 text-lg font-bold">Scan to Connect</h3>
+                </div>
+
+                <!-- BIG QR CODE -->
+                <div class="qr-frame my-6 w-56 h-56 flex items-center justify-center">
+                    <img id="card-qr" src="" alt="Scan WiFi QR" class="w-full h-full object-contain rounded-lg">
+                </div>
+
+                <div class="w-full space-y-4">
+                    <div
+                        class="flex justify-between items-center bg-slate-100 px-4 py-3 rounded-lg border border-slate-200">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Network</span>
+                        <span id="card-ssid"
+                            class="text-slate-800 font-bold text-lg truncate max-w-[180px]">MyNetwork</span>
+                    </div>
+
+                    <div
+                        class="flex justify-between items-center bg-slate-100 px-4 py-3 rounded-lg border border-slate-200">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Password</span>
+                        <!-- We use a monospace font for ambiguity clarity -->
+                        <span id="card-password"
+                            class="text-slate-800 font-mono font-bold text-lg truncate max-w-[180px]">••••••</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center pb-2">
+                    <p class="text-slate-400 text-xs font-medium italic mb-1">Enjoy your stay!</p>
+                    <p class="text-slate-300 text-[10px] font-semibold tracking-widest uppercase opacity-70">
+                        wifipass.pp.ua
+                    </p>
+                </div>
+            </div>
+
+            <div id="card-actions" class="hidden mt-6 flex justify-center gap-4">
+                <button id="print-btn"
+                    class="bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-8 rounded-full backdrop-blur-md border border-white/20 transition flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Print Card
+                </button>
+                <button id="reset-btn"
+                    class="bg-black/20 hover:bg-black/40 text-white font-semibold py-3 px-8 rounded-full border border-white/10 transition">
+                    New
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Print DOM Destination -->
+    <div id="print-area" class="hidden"></div>
+    <!-- Script -->
+    <script>
+        const form = document.getElementById('wifi-form');
+        const generateBtn = document.getElementById('generate-btn');
+        const printBtn = document.getElementById('print-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const printTarget = document.getElementById('print-target');
+        const cardActions = document.getElementById('card-actions');
+        const printArea = document.getElementById('print-area');
+
+        // Toggle Password
+        const togglePassBtn = document.getElementById('toggle-pass');
+        togglePassBtn.addEventListener('click', (e) => {
+            const input = document.getElementById('password');
+            if (input.disabled) return;
+            input.type = input.type === 'password' ? 'text' : 'password';
+            e.currentTarget.querySelector('svg').style.opacity = input.type === 'text' ? '1' : '0.5';
+        });
+
+        // Encryption Change Listener
+        const encryptionSelect = document.getElementById('encryption');
+        const passwordInput = document.getElementById('password');
+
+        encryptionSelect.addEventListener('change', () => {
+            const isOpen = encryptionSelect.value === 'nopass';
+            passwordInput.disabled = isOpen;
+            if (isOpen) {
+                passwordInput.value = '';
+                passwordInput.placeholder = 'No password required';
+                passwordInput.classList.add('opacity-50', 'cursor-not-allowed');
+                togglePassBtn.style.pointerEvents = 'none';
+                togglePassBtn.style.opacity = '0.3';
+
+                // Clear any password error
+                const err = passwordInput.parentNode.querySelector('.error-msg');
+                if (err) err.remove();
+                passwordInput.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+            } else {
+                passwordInput.placeholder = 'SafePassword123';
+                passwordInput.classList.remove('opacity-50', 'cursor-not-allowed');
+                togglePassBtn.style.pointerEvents = 'auto';
+                togglePassBtn.style.opacity = '1';
+            }
+        });
+
+        // Validation Helper
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            // Remove existing error if any
+            const existingError = input.parentNode.querySelector('.error-msg');
+            if (existingError) existingError.remove();
+
+            // Add red border
+            input.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+
+            // Add message
+            const msg = document.createElement('p');
+            msg.className = 'error-msg text-red-300 text-xs mt-1 ml-1 font-medium';
+            msg.textContent = message;
+            input.parentNode.appendChild(msg);
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-msg').forEach(el => el.remove());
+            document.querySelectorAll('input, select').forEach(el => {
+                el.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+            });
+        }
+
+        // Clear errors on input
+        ['ssid', 'password', 'encryption'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                const input = document.getElementById(id);
+                input.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+                const err = input.parentNode.querySelector('.error-msg');
+                if (err) err.remove();
+            });
+        });
+
+        generateBtn.addEventListener('click', async () => {
+            clearErrors();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            let hasError = false;
+
+            // Validate SSID
+            if (!data.ssid.trim()) {
+                showError('ssid', 'Network Name is required');
+                hasError = true;
+            }
+
+            // Validate Password (if encryption is NOT 'nopass')
+            const isSecured = document.getElementById('encryption').value !== 'nopass';
+            if (isSecured && !data.password.trim()) {
+                showError('password', 'Password is required for secured networks');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            generateBtn.textContent = 'Creating...';
+            generateBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ssid: data.ssid,
+                        password: isSecured ? data.password : '', // Force empty if not secured
+                        encryption: data.encryption,
+                        hidden: data.hidden === 'on'
+                    })
+                });
+
+                const result = await res.json();
+
+                if (result.qrCodeDataUrl) {
+                    // Populate Card
+                    document.getElementById('card-ssid').textContent = data.ssid;
+                    // Strict "Open Network" display
+                    document.getElementById('card-password').textContent = isSecured ? data.password : 'Open Network';
+                    document.getElementById('card-qr').src = result.qrCodeDataUrl;
+
+                    // Show
+                    printTarget.classList.add('visible');
+                    cardActions.classList.remove('hidden');
+                    cardActions.classList.add('flex');
+
+                    // On Mobile, scroll to it
+                    if (window.innerWidth < 768) {
+                        printTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else if (result.error) {
+                    alert(result.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error generating card.");
+            } finally {
+                generateBtn.textContent = 'Generate Card';
+                generateBtn.disabled = false;
+            }
+        });
+
+        printBtn.addEventListener('click', () => {
+            const clone = printTarget.cloneNode(true);
+            clone.id = 'print-card-clone'; // Prevent duplicate ID
+            printArea.innerHTML = '';
+            printArea.appendChild(clone);
+
+            // Temporarily remove hidden class to ensure visibility logic works
+            printArea.classList.remove('hidden');
+
+            window.print();
+
+            // Re-hide after print (optional, but keeps DOM clean)
+            // setTimeout(() => printArea.classList.add('hidden'), 500);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            printTarget.classList.remove('visible');
+            cardActions.classList.add('hidden');
+            cardActions.classList.remove('flex');
+            form.reset();
+            clearErrors();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+    </script>
+</body>
+
+</html>
