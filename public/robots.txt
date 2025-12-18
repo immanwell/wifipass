@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wifipass.pp.ua/sitemap.xml
