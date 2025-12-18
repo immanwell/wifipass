@@ -63,6 +63,10 @@ app.post('/api/generate', async (req, res) => {
 });
 
 // Fallback to index.html
+app.get('/github', (req, res) => {
+  res.redirect('/?utm_source=github&utm_medium=about&utm_campaign=repo-link');
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
