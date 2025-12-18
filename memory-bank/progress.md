@@ -1,7 +1,11 @@
 # ✅ Task Checklist and Progress
 
 ## PENDING
-* [ ] Helper script for easy deployment (Skipped: Deployment is standard npm start).
+* [ ] SEO Optimization
+  - [ ] Meta Tags & Open Graph
+  - [ ] Robots.txt & Sitemap
+  - [ ] Structured Data (JSON-LD)
+* [ ] Fix iOS Safari print issue (Deferred)
 
 ## IN PROGRESS
 

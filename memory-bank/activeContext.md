@@ -1,5 +1,9 @@
 # 📌 Active Session Context
 
+# 📌- **Active Tasks**:
+    - [ ] SEO Implementation (Meta tags, Open Graph, Sitemap)
+    - [ ] Deferred: Fix iOS Safari print blank page issue (requires deeper investigation into mobile print drivers)
+
 ## 1. Current Session Goal
 Project Completed.
 
