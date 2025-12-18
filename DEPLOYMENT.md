@@ -54,13 +54,20 @@ Now tell CloudPanel to point to your running app:
 3.  Click **Save**.
 
 
-## 5. Future Updates
-To update your site later, just run:
+## 5. Future Updates & Restarts
+To update your site later, run:
 
 ```bash
 ssh wifipass@<YOUR_SERVER_IP>
 cd htdocs/wifipass.pp.ua
 git pull origin main
 npm install
-# Then restart via CloudPanel UI or 'npm start' if not managed
+# Restart the app to apply changes (Required for backend changes)
+pm2 restart wifipass
 ```
+
+### Useful PM2 Commands
+*   `pm2 list`: See all running apps and their status.
+*   `pm2 logs wifipass`: See the live console output/errors.
+*   `pm2 restart wifipass`: Restart the application.
+
