@@ -13,6 +13,11 @@ const port = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
+// WiFi string escaping (per zxing spec)
+function escapeWifiString(str: string): string {
+  return str.replace(/([\\;,:"'`])/g, '\\$1');
+}
+
 // API: Generate QR Code
 app.post('/api/generate', async (req, res) => {
   try {
@@ -34,9 +39,9 @@ app.post('/api/generate', async (req, res) => {
     // P: Password
     // H: Hidden (true/false)
 
-    let wifiString = `WIFI:T:${encryption || 'WPA'};S:${ssid};`;
+    let wifiString = `WIFI:T:${encryption || 'WPA'};S:${escapeWifiString(ssid)};`;
     if (encryption !== 'nopass' && password) {
-      wifiString += `P:${password};`;
+      wifiString += `P:${escapeWifiString(password)};`;
     }
     if (hidden) {
       wifiString += `H:true;`;
