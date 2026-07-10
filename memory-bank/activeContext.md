@@ -2,7 +2,7 @@
 
 ## Active Tasks
 * [ ] Fix iOS Safari print issue (Deferred)
-* [ ] Document Future Feature: Custom Establishment Name (Done)
+* [x] Document Future Feature: Custom Establishment Name (Done)
 
 ## Recent Context
 * **AdBlock Note:** User confirmed social share buttons may be hidden by AdGuard on macOS Safari; acceptable behavior (no fix needed).
